@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'password', "first_name"]
+        fields = ['username', "first_name"]
 
     def create(self, data):
         user = User.objects.create(username = data.get("username"), first_name = data.get("first_name"))
@@ -37,3 +37,11 @@ class BookSerializer(serializers.ModelSerializer):
         model = Books
         fields = "__all__"
         # depth = 1
+
+class ProductSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+    # user = UserSerializer()
+    class Meta:
+        model = Product
+        fields = "__all__"
+        depth = 1

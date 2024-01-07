@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import HttpResponse
 from .models import *
 from .serializers import *
 from rest_framework.views import APIView
@@ -14,6 +15,9 @@ def get_book(request):
     book_obj = Books.objects.all()
     serialized_data = BookSerializer(book_obj, many = True)
     return Response({"status": 200, "data": serialized_data.data})
+
+def home(request):
+    return HttpResponse("Server is up and runing!!!")
 
 class Register_user(APIView):
     def post(self, request):
@@ -85,42 +89,22 @@ class StudentsApi(APIView):
         except:
             return Response({"status": 403, "message": "Student not Found!"})
 
-# @api_view(['GET'])
-# def student(request):
-#     student_obj = Student.objects.all()
-#     serialized_data = StudentSerializer(student_obj, many = True)
-#     return Response({"status": 200, "data": serialized_data.data})
 
-
-# @api_view(['POST', 'PUT'])
-# def add_student(request):
-#     data = request.data
+class ProductApi(APIView):
     
-#     try:
-#         if request.method == "PUT":
-#             print("PUT")
-#             id = request.GET.get('id')
-#             student_obj = Student.objects.get(id = id)
-#             serialized_data = StudentSerializer(student_obj, data = data, partial=True)
-#         else:
-#             serialized_data = StudentSerializer(data = data)
-#     except:
-#         return Response({"status": 403, "message": "Student not found!"})
-#     else:
-        
-#         if not serialized_data.is_valid():
-#             return Response({"status": 403, "errors": serialized_data.errors, "message": "Something went wrong!"})
+    def get(self, request):
+        products_id = request.GET.get('id')
+        gender = request.GET.get('gender')
+        print(products_id)
 
-#         serialized_data.save()
-#         return Response({"status": 200, "data": serialized_data.data, "message": "Data saved successfully"}) 
-
-# @api_view(["DELETE"])
-# def delete_student(request, id):
-#     try:
-#         print("Gayyyaa")
-#         student_obj = Student.objects.get(id = id)
-#         student_obj.delete()
-#         return Response({"status": 200, "message": "Student deleted successfully"})
-#     except:
-#         return Response({"status": 403, "message": "Student not Found!"})
-        
+        if products_id:
+            products_obj = Product.objects.get(id=products_id)
+            serialized_data = ProductSerializer(products_obj)
+        else:
+            if gender:
+                products_obj = Product.objects.filter(gender=gender)
+            else:
+                products_obj = Product.objects.all()
+            serialized_data = ProductSerializer(products_obj, many = True)
+            
+        return Response({"status": 200, "data": serialized_data.data})
